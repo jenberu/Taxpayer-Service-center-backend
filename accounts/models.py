@@ -8,7 +8,10 @@ class User(AbstractBaseUser, PermissionsMixin):
    username = models.CharField(db_index=True,max_length=255, unique=True)
    first_name = models.CharField(max_length=255)
    last_name = models.CharField(max_length=255)
+
    email=models.EmailField(db_index=True,unique=True,)
+   bio = models.TextField(blank=True, null=True)  # Optional bio field (text)
+   avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
    is_active=models.BooleanField(default=True)
    created=models.DateTimeField(auto_now_add=True)
    updated=models.DateTimeField(auto_now=True)
