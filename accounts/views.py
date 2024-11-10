@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from .serializers import UserSerializer
 from .models import User
 from django.http import Http404
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import RegisterSerializer
 
 from rest_framework.pagination import PageNumberPagination
 class CustomPagination(PageNumberPagination):
@@ -24,5 +27,27 @@ class UserViewSet(viewsets.ModelViewSet):
             return obj
         except Http404:
             raise Http404("User with this public ID does not exist.")
+class RegisterViewSet(viewsets.ViewSet):
+     serializer_class = RegisterSerializer
+     permission_classes=[AllowAny]
+     http_method_names=['post']
+     #create method is called when the view is accessed via a POST request.
+     def create(self,request,*args,**kwargs):
+         serializer=self.serializer_class(data=request.data)
+         serializer.is_valid(raise_exception=True)
+         #riggers the create method defined in the RegisterSerializer
+         user=serializer.save()
+         refresh=RefreshToken.for_user(user)
+         res={
+             "refresh": str(refresh),
+             "access": str(refresh.access_token),
+         }
+         return Response({
+             "user":serializer.data,
+             "refresh": res["refresh"],
+             "token": res["access"]
 
+         },status=status.HTTP_201_CREATED)
+
+    
 
