@@ -13,6 +13,7 @@ class User(AbstractBaseUser, PermissionsMixin):
    bio = models.TextField(blank=True, null=True)  # Optional bio field (text)
    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
    is_active=models.BooleanField(default=True)
+   is_staff = models.BooleanField(default=False)
    created=models.DateTimeField(auto_now_add=True)
    updated=models.DateTimeField(auto_now=True)
    USERNAME_FIELD = 'email'

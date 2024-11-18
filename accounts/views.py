@@ -45,6 +45,12 @@ class RegisterViewSet(viewsets.ViewSet):
              "refresh": str(refresh),
              "access": str(refresh.access_token),
          }
+         print({
+             "user":serializer.data,
+             "refresh": res["refresh"],
+             "token": res["access"]
+
+         })
          return Response({
              "user":serializer.data,
              "refresh": res["refresh"],
