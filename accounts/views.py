@@ -1,6 +1,6 @@
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework import viewsets
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework import viewsets,views
 from .serializers import UserSerializer
 from .models import User
 from django.http import Http404
@@ -9,7 +9,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer,LoginSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken,TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
+from django.contrib.auth.models import AnonymousUser
 
 
 from rest_framework.pagination import PageNumberPagination
@@ -80,7 +81,23 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
             raise InvalidToken(e.args[0])
         return Response(serializer.validated_data,status=status.HTTP_200_OK)
 @api_view(['GET'])    
+@permission_classes([IsAuthenticated])
 def current_user(request):
-    user=request.user
-    serializer=UserSerializer(user)
-    return Response({'user':serializer.data})
+    serializer = UserSerializer(request.user)
+    return Response({'user': serializer.data})
+
+
+class LogoutView(views.APIView):
+    permission_classes = (IsAuthenticated,)  # Add a comma to make it a tuple
+
+    def post(self, request):
+        try:
+            refresh_token = request.data.get("refresh")  # Use `.get` for safer data access
+            if not refresh_token:
+                return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
+            
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Logout successful"}, status=status.HTTP_205_RESET_CONTENT)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
