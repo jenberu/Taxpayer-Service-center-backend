@@ -9,6 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer,LoginSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken,TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.decorators import api_view
 
 
 from rest_framework.pagination import PageNumberPagination
@@ -40,17 +41,14 @@ class RegisterViewSet(viewsets.ViewSet):
          serializer.is_valid(raise_exception=True)
          #riggers the create method defined in the RegisterSerializer
          user=serializer.save()
+         #reates a new refresh token associated with the user
          refresh=RefreshToken.for_user(user)
+        
          res={
              "refresh": str(refresh),
              "access": str(refresh.access_token),
          }
-         print({
-             "user":serializer.data,
-             "refresh": res["refresh"],
-             "token": res["access"]
-
-         })
+       
          return Response({
              "user":serializer.data,
              "refresh": res["refresh"],
@@ -67,6 +65,7 @@ class LoginViewSet(viewsets.ViewSet):
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
+
             raise InvalidToken(e.args[0])
         return Response(serializer.validated_data,status=status.HTTP_200_OK)   
 
@@ -80,3 +79,8 @@ class RefreshViewSet(viewsets.ViewSet, TokenRefreshView):
         except TokenError as e:
             raise InvalidToken(e.args[0])
         return Response(serializer.validated_data,status=status.HTTP_200_OK)
+@api_view(['GET'])    
+def current_user(request):
+    user=request.user
+    serializer=UserSerializer(user)
+    return Response({'user':serializer.data})
