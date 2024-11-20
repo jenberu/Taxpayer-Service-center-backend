@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,Permissi
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from .customManagers import UserManager
+from AdminLevel.models import Kebele
 class User(AbstractBaseUser, PermissionsMixin):
    ROLE_CHOICES=[
         ('TAXPAYER', 'Taxpayer'),
@@ -15,11 +16,8 @@ class User(AbstractBaseUser, PermissionsMixin):
    username = models.CharField(db_index=True,max_length=255, unique=True)
    first_name = models.CharField(max_length=255)
    last_name = models.CharField(max_length=255)
-   role=models.CharField(max_length=30,choices=ROLE_CHOICES)
-#    kebele=models.ForeignKey()
+   role=models.CharField(max_length=30,choices=ROLE_CHOICES,default="TAXPAYER")
    email=models.EmailField(db_index=True,unique=True,)
-   bio = models.TextField(blank=True, null=True)  # Optional bio field (text)
-   avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
    is_active=models.BooleanField(default=True)
    is_staff = models.BooleanField(default=False)
    created=models.DateTimeField(auto_now_add=True)

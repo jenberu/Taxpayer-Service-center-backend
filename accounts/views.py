@@ -36,24 +36,21 @@ class RegisterViewSet(viewsets.ViewSet):
      http_method_names=['post']
      #create method is called when the view is accessed via a POST request.
      def create(self,request,*args,**kwargs):
-         serializer=self.serializer_class(data=request.data)
-         serializer.is_valid(raise_exception=True)
-         #riggers the create method defined in the RegisterSerializer
-         user=serializer.save()
-         #reates a new refresh token associated with the user
-         refresh=RefreshToken.for_user(user)
-        
-         res={
-             "refresh": str(refresh),
-             "access": str(refresh.access_token),
-         }
-       
-         return Response({
-             "user":serializer.data,
-             "refresh": res["refresh"],
-             "token": res["access"]
-
-         },status=status.HTTP_201_CREATED)
+         try:
+            serializer=self.serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            #riggers the create method defined in the RegisterSerializer
+            user=serializer.save()
+            #reates a new refresh token associated with the user
+            refresh=RefreshToken.for_user(user)
+            response_data = {
+                    "user": serializer.data,
+                    "refresh": str(refresh),
+                    "token": str(refresh.access_token)
+                }
+            return Response(response_data, status=status.HTTP_201_CREATED)
+         except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginViewSet(viewsets.ViewSet):
     serializer_class = LoginSerializer
