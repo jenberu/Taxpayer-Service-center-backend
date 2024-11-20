@@ -10,9 +10,7 @@ from .serializers import RegisterSerializer,LoginSerializer
 from rest_framework_simplejwt.exceptions import InvalidToken,TokenError
 from rest_framework_simplejwt.views import TokenRefreshView
 from rest_framework.decorators import api_view,permission_classes
-from django.contrib.auth.models import AnonymousUser
-
-
+# from django.contrib.auth.models import AnonymousUser
 from rest_framework.pagination import PageNumberPagination
 class CustomPagination(PageNumberPagination):
     page_size = 10 
@@ -89,10 +87,9 @@ def current_user(request):
 
 class LogoutView(views.APIView):
     permission_classes = (IsAuthenticated,)  # Add a comma to make it a tuple
-
     def post(self, request):
         try:
-            refresh_token = request.data.get("refresh")  # Use `.get` for safer data access
+            refresh_token = request.data.get("refresh")  
             if not refresh_token:
                 return Response({"error": "Refresh token is required"}, status=status.HTTP_400_BAD_REQUEST)
             
