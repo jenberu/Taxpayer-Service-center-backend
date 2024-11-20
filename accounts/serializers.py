@@ -6,6 +6,9 @@ from rest_framework_simplejwt.settings import api_settings
 from django.contrib.auth.models import update_last_login
 from Taxpayer.serializers import TaxPayerProfileSerializer
 from Taxpayer.models import TaxPayerProfile
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import get_user_model
+
 class UserSerializer(serializers.ModelSerializer):
     id=serializers.UUIDField(source='public_id',read_only=True, format='hex')
     created = serializers.DateTimeField(read_only=True)
@@ -43,4 +46,3 @@ class LoginSerializer(TokenObtainPairSerializer):
       if api_settings.UPDATE_LAST_LOGIN:
          update_last_login(None,self.user)
       return data   
-

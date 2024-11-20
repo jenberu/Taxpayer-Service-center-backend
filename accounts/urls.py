@@ -1,7 +1,7 @@
 from django.urls import path,include
 from rest_framework import routers
 from .views import (UserViewSet ,RegisterViewSet,LoginViewSet,LogoutView,
-                    RefreshViewSet,current_user)
+                  RefreshViewSet,current_user)
 router=routers.DefaultRouter()
 router.register(r'user',UserViewSet,basename='user')
 router.register(r'register', RegisterViewSet,basename='register')
@@ -10,4 +10,5 @@ router.register(r'refresh', RefreshViewSet,basename='refresh')
 urlpatterns = [
     path('',include(router.urls)),
     path('current_user/',current_user,name="current_user"),
-    path('logout/', LogoutView.as_view(), name ='logout')]
+    path('logout/', LogoutView.as_view(), name ='logout'),
+ ]
