@@ -4,11 +4,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from .customManagers import UserManager
 class User(AbstractBaseUser, PermissionsMixin):
+   ROLE_CHOICES=[
+        ('TAXPAYER', 'Taxpayer'),
+        ('KEBELE_ADMIN', 'Kebele Admin'),
+        ('WOREDA_ADMIN', 'Woreda Admin'),
+        ('ZONE_ADMIN', 'Zone Admin'),
+        ('REGIONAL_ADMIN', 'Regional Admin'),
+   ]
    public_id = models.UUIDField(db_index=True, unique=True, default=uuid.uuid4, editable=False)
    username = models.CharField(db_index=True,max_length=255, unique=True)
    first_name = models.CharField(max_length=255)
    last_name = models.CharField(max_length=255)
-
+   role=models.CharField(max_length=30,choices=ROLE_CHOICES)
+#    kebele=models.ForeignKey()
    email=models.EmailField(db_index=True,unique=True,)
    bio = models.TextField(blank=True, null=True)  # Optional bio field (text)
    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
